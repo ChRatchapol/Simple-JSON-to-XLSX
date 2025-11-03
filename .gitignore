@@ -211,4 +211,5 @@ __marimo__/
 output/
 *.xlsx
 *.json
+*.txt
 !sample.json
