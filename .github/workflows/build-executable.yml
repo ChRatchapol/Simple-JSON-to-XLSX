@@ -34,24 +34,13 @@ jobs:
 
       - name: Prepare macOS
         if: runner.os == 'macOS'
-        run: |
-          cd dist
-          zip -r JSON2XLSX-macos.zip JSON2XLSX.app
+        run: mv dist/JSON2XLSX dist/JSON2XLSX-macos
 
-      - name: Upload Artifact (Windows/Linux)
-        if: runner.os != 'macOS'
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: binary-${{ matrix.os }}
           path: dist/JSON2XLSX-*
-          if-no-files-found: error
-
-      - name: Upload Artifact (macOS)
-        if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v4
-        with:
-          name: binary-${{ matrix.os }}
-          path: dist/JSON2XLSX-macos.zip
           if-no-files-found: error
 
   publish:
