@@ -19,24 +19,39 @@ jobs:
         with:
           python-version: "3.14"
       - run: pip install chardet openpyxl pandas pyinstaller
-      - run: pyinstaller --onefile --name JSON2XLSX main.py
 
-      - name: Rename Output
-        shell: bash
+      - name: Build with PyInstaller
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            mv dist/JSON2XLSX.exe dist/JSON2XLSX-windows.exe
-          elif [ "$RUNNER_OS" == "Linux" ]; then
-            mv dist/JSON2XLSX dist/JSON2XLSX-linux
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            mv dist/JSON2XLSX dist/JSON2XLSX-macos
-          fi
+          pyinstaller --onefile --noconsole --name JSON2XLSX main.py
 
-      - name: Upload Artifact
+      - name: Prepare Windows
+        if: runner.os == 'Windows'
+        run: mv dist/JSON2XLSX.exe dist/JSON2XLSX-windows.exe
+
+      - name: Prepare Linux
+        if: runner.os == 'Linux'
+        run: mv dist/JSON2XLSX dist/JSON2XLSX-linux
+
+      - name: Prepare macOS
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          zip -r JSON2XLSX-macos.zip JSON2XLSX.app
+
+      - name: Upload Artifact (Windows/Linux)
+        if: runner.os != 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: binary-${{ matrix.os }}
-          path: dist/JSON2XLSX*
+          path: dist/JSON2XLSX-*
+          if-no-files-found: error
+
+      - name: Upload Artifact (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.os }}
+          path: dist/JSON2XLSX-macos.zip
           if-no-files-found: error
 
   publish:
@@ -48,9 +63,6 @@ jobs:
         with:
           path: ./downloaded_artifacts
           merge-multiple: true
-
-      - name: Display Files (Debug)
-        run: ls -R ./downloaded_artifacts
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
