@@ -4,6 +4,7 @@ black==25.9.0
 bottle==0.13.4
 bottle-websocket==0.2.9
 certifi==2025.10.5
+chardet==5.2.0
 charset-normalizer==3.4.4
 click==8.3.0
 Eel==0.18.2
