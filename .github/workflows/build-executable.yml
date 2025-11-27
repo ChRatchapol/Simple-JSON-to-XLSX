@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.14"
-      - run: pip install chardet pandas pyinstaller
+      - run: pip install chardet openpyxl pandas pyinstaller
       - run: pyinstaller --onefile --name JSON2XLSX main.py
 
       - name: Rename Output
